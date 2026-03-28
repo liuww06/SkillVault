@@ -1,0 +1,5 @@
+name: code-reviewer
+description: Automated code review agent
+triggers:
+  - "review this code"
+  - "code review"
