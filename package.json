@@ -1,0 +1,11 @@
+{
+  "name": "skillvault",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Personal AI agent tool repository",
+  "scripts": {
+    "build": "npm run build --workspace=cli",
+    "test": "npm test --workspace=cli"
+  },
+  "workspaces": ["cli"]
+}
