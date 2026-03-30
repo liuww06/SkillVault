@@ -1,5 +1,5 @@
-import type { Registry, RegistryEntry } from '../types.js';
 import type { GitHubConfig } from '../github.js';
+import { getDefaultConfig } from '../github.js';
 import { findEntry, resolveVariant, loadRegistry } from '../registry.js';
 import type { Installer, InstallContext } from '../installer/types.js';
 import { CommonInstaller } from '../installer/common.js';
@@ -42,7 +42,7 @@ export async function addCommand(
     type: entry.type,
     sourcePath: variant.path,
     targetDir: process.cwd(),
-    config: config ?? { repo: 'liuww06/SkillVault', branch: 'main' },
+    config: config ?? getDefaultConfig(),
   };
 
   await installer.install(ctx);

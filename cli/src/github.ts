@@ -39,7 +39,10 @@ export async function listFiles(config: GitHubConfig, dirPath: string): Promise<
   const response = await fetch(url, {
     headers: { Accept: 'application/vnd.github.v3+json' },
   });
-  if (!response.ok) return [];
+  if (response.status === 404) return [];
+  if (!response.ok) {
+    throw new Error(`Failed to list files at ${dirPath}: ${response.status} ${response.statusText}`);
+  }
   const data = (await response.json()) as Array<{ name: string; type: string }>;
   return data.filter((f) => f.type === 'file').map((f) => f.name);
 }
