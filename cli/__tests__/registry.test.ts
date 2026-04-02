@@ -1,36 +1,34 @@
 import { describe, it, expect } from 'vitest';
-import { findEntry, resolveVariant, filterByType, searchEntries } from '../src/registry.js';
+import { findEntry, filterByType, searchEntries } from '../src/registry.js';
+import { migrateV1Registry } from '../src/registry.js';
 import type { Registry } from '../src/types.js';
 
 const mockRegistry: Registry = {
-  version: '1',
+  version: '2',
   entries: [
     {
       name: 'debugging',
       type: 'skill',
       description: 'Systematic debugging workflow',
-      variants: [
-        { agent: 'claude-code', path: 'skills/claude-code/debugging' },
-        { agent: 'copilot', path: 'skills/copilot/debugging' },
-      ],
+      path: 'skills/debugging',
     },
     {
       name: 'code-review',
       type: 'skill',
       description: 'Code review skill',
-      variants: [{ agent: 'common', path: 'skills/common/code-review' }],
+      path: 'skills/code-review',
     },
     {
       name: 'code-reviewer',
       type: 'agent',
       description: 'Automated code review agent',
-      variants: [{ agent: 'claude-code', path: 'agents/claude-code/code-reviewer' }],
+      path: 'agents/code-reviewer',
     },
     {
       name: 'concise-output',
       type: 'prompt',
       description: 'System prompt for concise output',
-      variants: [{ agent: 'common', path: 'prompts/common/concise-output' }],
+      path: 'prompts/concise-output',
     },
   ],
 };
@@ -49,26 +47,44 @@ describe('findEntry', () => {
   });
 });
 
-describe('resolveVariant', () => {
-  it('returns exact agent match', () => {
-    const entry = mockRegistry.entries[0]; // debugging
-    const variant = resolveVariant(entry, 'copilot');
-    expect(variant).toBeDefined();
-    expect(variant!.agent).toBe('copilot');
-    expect(variant!.path).toBe('skills/copilot/debugging');
+describe('migrateV1Registry', () => {
+  it('converts v1 registry with variants to v2 format', () => {
+    const v1 = {
+      version: '1',
+      entries: [
+        {
+          name: 'debugging',
+          type: 'skill',
+          description: 'Debugging',
+          variants: [
+            { agent: 'claude-code', path: 'skills/claude-code/debugging' },
+            { agent: 'common', path: 'skills/common/debugging' },
+          ],
+        },
+      ],
+    };
+
+    const result = migrateV1Registry(v1);
+    expect(result.version).toBe('2');
+    expect(result.entries).toHaveLength(1);
+    expect(result.entries[0].path).toBe('skills/common/debugging');
   });
 
-  it('falls back to common when agent not found', () => {
-    const entry = mockRegistry.entries[1]; // code-review (common only)
-    const variant = resolveVariant(entry, 'copilot');
-    expect(variant).toBeDefined();
-    expect(variant!.agent).toBe('common');
-  });
+  it('picks first variant when no common available', () => {
+    const v1 = {
+      version: '1',
+      entries: [
+        {
+          name: 'test',
+          type: 'skill',
+          description: 'Test',
+          variants: [{ agent: 'claude-code', path: 'skills/claude-code/test' }],
+        },
+      ],
+    };
 
-  it('returns undefined when no match and no common', () => {
-    const entry = mockRegistry.entries[2]; // code-reviewer (claude-code only)
-    const variant = resolveVariant(entry, 'copilot');
-    expect(variant).toBeUndefined();
+    const result = migrateV1Registry(v1);
+    expect(result.entries[0].path).toBe('skills/claude-code/test');
   });
 });
 

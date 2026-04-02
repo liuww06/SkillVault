@@ -1,14 +1,17 @@
 import { BaseInstaller } from './base.js';
 import type { InstallContext } from './types.js';
 import { join } from 'path';
+import { homedir } from 'os';
 
 export class ClaudeCodeInstaller extends BaseInstaller {
   getDirectoryPath(ctx: InstallContext): string {
+    const base = ctx.global ? join(homedir(), '.claude') : join(ctx.targetDir, '.claude');
     const subdir = ctx.type === 'skill' ? 'skills' : 'agents';
-    return join(ctx.targetDir, '.claude', subdir, ctx.name);
+    return join(base, subdir, ctx.name);
   }
 
   getPromptPath(ctx: InstallContext): string {
-    return join(ctx.targetDir, '.claude', 'system-prompt.md');
+    const base = ctx.global ? join(homedir(), '.claude') : join(ctx.targetDir, '.claude');
+    return join(base, 'system-prompt.md');
   }
 }

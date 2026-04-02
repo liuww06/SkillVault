@@ -1,15 +1,10 @@
 export type EntryType = 'skill' | 'agent' | 'prompt';
 
-export interface Variant {
-  agent: string;
-  path: string;
-}
-
 export interface RegistryEntry {
   name: string;
   type: EntryType;
   description: string;
-  variants: Variant[];
+  path: string;
 }
 
 export interface Registry {

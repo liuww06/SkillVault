@@ -3,19 +3,19 @@ import { searchCommand } from '../../src/commands/search.js';
 import type { Registry } from '../../src/types.js';
 
 const mockRegistry: Registry = {
-  version: '1',
+  version: '2',
   entries: [
     {
       name: 'debugging',
       type: 'skill',
       description: 'Systematic debugging workflow',
-      variants: [{ agent: 'claude-code', path: 'skills/claude-code/debugging' }],
+      path: 'skills/debugging',
     },
     {
       name: 'code-review',
       type: 'skill',
       description: 'Code review skill',
-      variants: [{ agent: 'common', path: 'skills/common/code-review' }],
+      path: 'skills/code-review',
     },
   ],
 };

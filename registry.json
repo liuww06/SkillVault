@@ -1,38 +1,29 @@
 {
-  "version": "1",
+  "version": "2",
   "entries": [
-    {
-      "name": "code-review",
-      "type": "skill",
-      "description": "Code review skill for systematic review workflow",
-      "variants": [
-        { "agent": "common", "path": "skills/common/code-review" }
-      ]
-    },
     {
       "name": "debugging",
       "type": "skill",
       "description": "Systematic debugging workflow",
-      "variants": [
-        { "agent": "claude-code", "path": "skills/claude-code/debugging" },
-        { "agent": "common", "path": "skills/common/debugging" }
-      ]
+      "path": "skills/debugging"
+    },
+    {
+      "name": "code-review",
+      "type": "skill",
+      "description": "Code review skill for systematic review workflow",
+      "path": "skills/code-review"
     },
     {
       "name": "code-reviewer",
       "type": "agent",
       "description": "Automated code review agent",
-      "variants": [
-        { "agent": "claude-code", "path": "agents/claude-code/code-reviewer" }
-      ]
+      "path": "agents/code-reviewer"
     },
     {
       "name": "concise-output",
       "type": "prompt",
       "description": "System prompt for concise output style",
-      "variants": [
-        { "agent": "common", "path": "prompts/common/concise-output" }
-      ]
+      "path": "prompts/concise-output"
     }
   ]
 }

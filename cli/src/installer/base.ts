@@ -1,11 +1,14 @@
 import type { Installer, InstallContext } from './types.js';
 import { mkdir, writeFile, appendFile, stat } from 'fs/promises';
 import { dirname, join } from 'path';
-import { listFiles, fetchFileContent } from '../github.js';
 
 export abstract class BaseInstaller implements Installer {
   abstract getDirectoryPath(ctx: InstallContext): string;
   abstract getPromptPath(ctx: InstallContext): string;
+
+  protected transformFiles(_ctx: InstallContext): Map<string, string> {
+    return _ctx.sourceFiles;
+  }
 
   async install(ctx: InstallContext): Promise<void> {
     if (ctx.type === 'prompt') {
@@ -19,14 +22,13 @@ export abstract class BaseInstaller implements Installer {
     const destDir = this.getDirectoryPath(ctx);
     await mkdir(destDir, { recursive: true });
 
-    const files = await listFiles(ctx.config, ctx.sourcePath);
-    if (files.length === 0) {
-      throw new Error(`No files found at ${ctx.sourcePath}`);
+    const files = this.transformFiles(ctx);
+    if (files.size === 0) {
+      throw new Error(`No files to install for "${ctx.name}"`);
     }
 
-    for (const file of files) {
-      const content = await fetchFileContent(ctx.config, join(ctx.sourcePath, file));
-      await writeFile(join(destDir, file), content);
+    for (const [filename, content] of files) {
+      await writeFile(join(destDir, filename), content);
     }
   }
 
@@ -34,15 +36,15 @@ export abstract class BaseInstaller implements Installer {
     const destFile = this.getPromptPath(ctx);
     await mkdir(dirname(destFile), { recursive: true });
 
-    const files = await listFiles(ctx.config, ctx.sourcePath);
-    for (const file of files) {
-      const content = await fetchFileContent(ctx.config, join(ctx.sourcePath, file));
-      try {
-        await stat(destFile);
-        await appendFile(destFile, '\n\n' + content);
-      } catch {
-        await writeFile(destFile, content);
-      }
+    const files = this.transformFiles(ctx);
+    const parts = Array.from(files.values());
+    const content = parts.join('\n\n');
+
+    try {
+      await stat(destFile);
+      await appendFile(destFile, '\n\n' + content);
+    } catch {
+      await writeFile(destFile, content);
     }
   }
 }

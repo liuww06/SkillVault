@@ -3,25 +3,25 @@ import { listCommand } from '../../src/commands/list.js';
 import type { Registry } from '../../src/types.js';
 
 const mockRegistry: Registry = {
-  version: '1',
+  version: '2',
   entries: [
     {
       name: 'debugging',
       type: 'skill',
       description: 'Systematic debugging workflow',
-      variants: [{ agent: 'claude-code', path: 'skills/claude-code/debugging' }],
+      path: 'skills/debugging',
     },
     {
       name: 'code-reviewer',
       type: 'agent',
       description: 'Automated code review agent',
-      variants: [{ agent: 'claude-code', path: 'agents/claude-code/code-reviewer' }],
+      path: 'agents/code-reviewer',
     },
     {
       name: 'concise-output',
       type: 'prompt',
       description: 'System prompt for concise output',
-      variants: [{ agent: 'common', path: 'prompts/common/concise-output' }],
+      path: 'prompts/concise-output',
     },
   ],
 };
@@ -45,7 +45,7 @@ describe('listCommand', () => {
   });
 
   it('returns empty message when no entries', () => {
-    const emptyRegistry: Registry = { version: '1', entries: [] };
+    const emptyRegistry: Registry = { version: '2', entries: [] };
     const lines = listCommand(emptyRegistry);
     expect(lines).toEqual(['No entries found.']);
   });
